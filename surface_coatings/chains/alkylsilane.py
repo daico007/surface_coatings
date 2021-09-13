@@ -2,7 +2,9 @@ import mbuild as mb
 from mbuild.lib.recipes import Alkane
 from mbuild.lib.moieties import Silane
 
-from util.helper.recipes.one_port import Methyl
+from surface_coatings.molecules.one_port import OnePort
+
+
 class Alkylsilane(mb.Compound):
     """A terminal-functionalized alkylsilane chain.
 
@@ -19,10 +21,10 @@ class Alkylsilane(mb.Compound):
        repository is `methyl`, but more can be easily added by providing
        appropriate supplement structure files.
     """
-    def __init__(self, chain_length, terminal_group):
+    def __init__(self, chain_length=17, terminal_group="methyl"):
         super(Alkylsilane, self).__init__()
-        terminal_group_dict = {"methyl":Methyl}
-        tgroup = terminal_group_dict[terminal_group]()
+
+        tgroup = OnePort(terminal_group)
 
         alkane = Alkane(chain_length, cap_front=False, cap_end=False)
         self.add(alkane, 'alkane')
