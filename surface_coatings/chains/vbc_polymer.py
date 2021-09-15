@@ -1,16 +1,15 @@
 import mbuild as mb
-from mbuild.lib.atoms import H
-from mbuild.lib.moieties import CH2, CH3
 from mbuild.lib.recipes import Polymer
 import numpy as np
 
 from surface_coatings.monomers import MethylStyrene
 from surface_coatings.monomers import (AzPMA, SBMA, Methacrylate, TriazoleBiotin)
 
-class VBCCopolymer(mb.Compound):
+
+class VBCPolymer(mb.Compound):
     def __init__(self, monomers=[Methacrylate(), SBMA(), AzPMA(), TriazoleBiotin()], n=1,
                  sequence='AABCBBD', port_labels=('up', 'down')):
-        super(VBCCopolymer, self).__init__()
+        super(VBCPolymer, self).__init__()
         copolymer = Polymer(monomers=monomers)
         copolymer.build(n=n, sequence=sequence, add_hydrogens=False)
         self.add(copolymer)

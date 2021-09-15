@@ -7,6 +7,7 @@ import mbuild as mb
 import numpy as np
 from mbuild.lib.bulk_materials import AmorphousSilicaBulk
 
+
 class SilicaInterfaceCarve(mb.Compound):
     """ A recipe for creating an interface from bulk silica.
 
@@ -66,6 +67,7 @@ class SilicaInterfaceCarve(mb.Compound):
         self._bridge_dangling_Os(self._oh_density, thickness)
         self._identify_surface_sites(thickness)
         self._adjust_stoichiometry()
+        self.periodicity = [True, True, False]
 
     def _cleave_interface(self, bulk_silica, tile_x, tile_y, thickness):
         """Carve interface from bulk silica.
@@ -77,11 +79,6 @@ class SilicaInterfaceCarve(mb.Compound):
         tile_z = int(math.ceil((thickness + 2*O_buffer) / bulk_silica.periodicity[2]))
         bulk = mb.lib.recipes.TiledCompound(bulk_silica, n_tiles=(tile_x, tile_y, tile_z))
 
-        """
-        interface = mb.Compound(periodicity=(bulk.periodicity[0],
-                                             bulk.periodicity[1],
-                                             0.0))
-        """
         interface = mb.Compound(periodicity=(True, True, False))
         for i, particle in enumerate(bulk.particles()):
             if ((particle.name == 'Si' and O_buffer < particle.pos[2] < (thickness + O_buffer)) or 
