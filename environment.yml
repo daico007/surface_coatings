@@ -1,0 +1,14 @@
+name: surface-coatings
+channels:
+  - conda-forge
+dependencies:
+  - mbuild
+  - ele
+  - foyer
+  - gmso
+  - pip
+  - numpy
+  - py3dmol
+  - python=3.8
+  - rdkit
+  - scipy
