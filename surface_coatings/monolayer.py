@@ -15,7 +15,7 @@ class Monolayer(mb.Compound):
     ----------
 
     """
-    def __init__(self, surface, chain, n_chains, backfill, tile_x=1, tile_y=1, rotate=True, seed=12345, **kwargs):
+    def __init__(self, surface, chain, n_chains, backfill=H(), tile_x=1, tile_y=1, rotate=True, seed=12345, **kwargs):
         super(Monolayer, self).__init__()
 
         tiled_compound = mb.lib.recipes.TiledCompound(surface, n_tiles=(tile_x, tile_y, 1))
