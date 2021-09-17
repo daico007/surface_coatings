@@ -1,3 +1,4 @@
+"""Routine to create alkylsilane chain."""
 import mbuild as mb
 from mbuild.lib.recipes import Alkane
 from mbuild.lib.moieties import Silane
@@ -35,4 +36,4 @@ class Alkylsilane(mb.Compound):
         self.add(silane, 'silane')
         mb.force_overlap(self['silane'], self['silane']['up'], self['alkane']['down'])
 
-        self.add(silane['down'], 'down', containment=False)
+        self.add(silane['down'], 'down', con tainment=False)

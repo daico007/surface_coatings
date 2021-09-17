@@ -1,9 +1,16 @@
+"""Routine to create silica surface."""
 import numpy as np
 import mbuild as mb
-from surface_coatings.monomers.methylstyrene import MethylStyrene
 
 
 class CrystalineSilicon(mb.Compound):
+    """A block of crystaline silicon.
+
+    Parameters
+    ----------
+    x, y, z: float, default= 10, 10, 10
+        Dimension of the silicon block.
+    """
     def __init__(self, x=10, y=10, z=10):
         super(CrystalineSilicon, self).__init__()
         # define all necessary lattice parameters
@@ -30,6 +37,17 @@ class CrystalineSilicon(mb.Compound):
 
 
 class SiliconInterface(mb.Compound):
+    """A surface made up of crystaline silicon.
+
+    Parameters
+    ----------
+    silicon: CrystalineSilicon
+        The crystaline silicon building block.
+    tile_x, tile_y: int
+        The number of tiles to build out the surface.
+    seed: int, optional, default=12345
+        Random seed used in some subprocess.
+    """
     def __init__(self, silicon=CrystalineSilicon(x=10, y=10, z=2), tile_x=1, tile_y=1, seed=12345):
         super(SiliconInterface, self).__init__()
         tiled_compound = mb.lib.recipes.TiledCompound(mb.clone(silicon), n_tiles=(tile_x, tile_y, 1))
@@ -39,6 +57,7 @@ class SiliconInterface(mb.Compound):
         self.periodicity = silicon.periodicity
 
     def _identify_surface_sites(self):
+        """Method to identify and add port to silicon at the surface."""
         for particle in list(self.particles()):
             if np.isclose(particle.pos[2], 0):
                 label = f'Si_{len(self.referenced_ports())}'
