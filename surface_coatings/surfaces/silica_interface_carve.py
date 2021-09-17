@@ -1,3 +1,4 @@
+"""Routine to create carve amorphous silica interface."""
 from __future__ import division
 
 import math
@@ -167,8 +168,3 @@ class SilicaInterfaceCarve(mb.Compound):
             O1 = random.choice(bottom_Os)
             bottom_Os.remove(O1)
             self.remove(O1)
-
-if __name__ == "__main__":
-    from mbuild.lib.bulk_materials import AmorphousSilica
-    silica_interface = mb.SilicaInterfaceCarve(bulk_silica=AmorphousSilica(), thickness=1.2)
-    silica_interface.save('silica_interface.mol2', show_ports=True)
