@@ -8,5 +8,5 @@ class TestSystem(object):
         assert silicon_surface.periodicity == (True, True, False)
 
     def test_silica_interface_carve(self):
-        silica_surface = SilicaInterfaceCarve)
+        silica_surface = SilicaInterfaceCarve()
         assert silica_surface.periodicity == (True, True, False)
