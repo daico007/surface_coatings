@@ -9,7 +9,7 @@ dependencies:
   - pip
   - numpy
   - py3dmol
-  - python=3.8
+  - python >=3.7
   - rdkit
   - scipy
   - pytest
