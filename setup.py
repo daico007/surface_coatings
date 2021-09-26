@@ -9,7 +9,10 @@ setup(name="surface_coatings",
       zip_safe=False,
       entry_points={
             "mbuild.plugins": [
-                ""
+                "Monolayer = surface_coatings.monolayer:Monolayer",
+                "DualMonolayer = surface_coatings.monolayer:DualMonolayer",
+                "SolvatedMonolayer = surface_coatings.solvated_monolayer.SolvatedMonolayer",
+                "SolvatedDualMonolayer = surface_coatings.solvated_monolayer.SolvatedDualMonolayer"
             ]
         }
     )
