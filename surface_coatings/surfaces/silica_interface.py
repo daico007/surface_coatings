@@ -9,6 +9,7 @@ class SilicaInterface(mb.Compound):
                                                       n_tiles=(tile_x, tile_y, 1))
         self.add(tiled_compound, "TiledCompound")
         self._transfer_ports()
+        self.periodicity = (True, True, False)
 
     def _transfer_ports(self):
         """Transfer available ports from TiledCompound to parents level"""
