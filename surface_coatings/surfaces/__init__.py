@@ -1,2 +1,3 @@
 from .silicon_interface import SiliconInterface
 from .silica_interface_carve import SilicaInterfaceCarve
+from .silica_interface import SilicaInterface

@@ -3,7 +3,6 @@ import numpy as np
 
 import mbuild as mb
 from mbuild.lib.atoms import H
-from mbuild.lib.recipes import Monolayer
 
 
 class Monolayer(mb.Compound):

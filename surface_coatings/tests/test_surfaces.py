@@ -1,5 +1,5 @@
 import mbuild as mb
-from surface_coatings.surfaces import SiliconInterface, SilicaInterfaceCarve
+from surface_coatings.surfaces import SiliconInterface, SilicaInterfaceCarve, SilicaInterface
 
 
 class TestSystem(object):
@@ -8,5 +8,9 @@ class TestSystem(object):
         assert silicon_surface.periodicity == (True, True, False)
 
     def test_silica_interface_carve(self):
-        silica_surface = SilicaInterfaceCarve)
+        silica_surface_carve = SilicaInterfaceCarve()
+        assert silica_surface_carve.periodicity == (True, True, False)
+
+    def test_silica_interface(self):
+        silica_surface = SilicaInterface()
         assert silica_surface.periodicity == (True, True, False)
