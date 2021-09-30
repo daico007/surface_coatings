@@ -5,7 +5,6 @@ from warnings import warn
 import numpy as np
 
 import mbuild as mb
-from mbuild.exceptions import MBuildError
 from mbuild.lib.atoms import H
 
 
@@ -42,15 +41,19 @@ class Monolayer(mb.Compound):
         pattern = mb.Random2DPattern(n_chains, seed=seed)
 
         if not isinstance(chains, list):
-            chains=list(chains)
-        if not isinstance(chains[0], mb.Compound):
-            raise MBuildError("Please provide chains as a list of mbuild.Compounds")
+            assert isinstance(chains, mb.Compound)
+            chains = list(chains)
+        for chain in chains:
+            assert isinstance(chain, mb.Compound), "Please provide chains as a list of mbuild.Compound"
         if not fractions:
             fractions = [1 / len(chains) for _ in range(len(chains))]
-        if isinstance(fractions, float):
-            fractions=list(fractions)
-        elif not isinstance(fractions, list):
-            raise TypeError("fractions has been provided as type {}. Please provide a list of floats.".format(type(fractions)))
+        if isinstance(fractions, (float, int)):
+            assert fractions == 1
+            fractions = list(fractions)
+        elif isinstance(fractions, (list, tuple)):
+            assert np.sum(fractions) == 1
+        else:
+            raise TypeError(f"Fractions has been provided as type {type(fractions)}. Please provide a list of floats.")
         if len(chains) != len(fractions):
             raise ValueError("Number of fractions does not match the number of chain types provided.")
 
@@ -79,14 +82,13 @@ class Monolayer(mb.Compound):
 
         else:
             warn("\n No fractions provided. Assuming a single chain type.")
-        
-        
-        attached_chains, backills = pattern.apply_to_compound(guest=chains[-1],
+
+        attached_chains, backfills = pattern.apply_to_compound(guest=chains[-1],
                                                               host=self["tiled_surface"],
                                                               backfill=backfill,
                                                               **kwargs)
         self.add(attached_chains)
-        self.add(backills)
+        self.add(backfills)
 
         if rotate_chains:
             np.random.seed(seed)
