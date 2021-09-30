@@ -63,12 +63,13 @@ class SilicaInterfaceCarve(mb.Compound):
         '''
 
         self._cleave_interface(bulk_silica, tile_x, tile_y, thickness)
+        self.periodicity = [True, True, False]
+        self.box = bulk_silica.box
         self.generate_bonds(name_a='Si', name_b='O', dmin=0.0, dmax=0.20419)
         self._strip_stray_atoms()
         self._bridge_dangling_Os(self._oh_density, thickness)
         self._identify_surface_sites(thickness)
         self._adjust_stoichiometry()
-        self.periodicity = [True, True, False]
 
     def _cleave_interface(self, bulk_silica, tile_x, tile_y, thickness):
         """Carve interface from bulk silica.
