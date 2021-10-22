@@ -42,7 +42,7 @@ class Monolayer(mb.Compound):
 
         if not isinstance(chains, list):
             assert isinstance(chains, mb.Compound)
-            chains = list(chains)
+            chains = [chains]
         for chain in chains:
             assert isinstance(chain, mb.Compound), "Please provide chains as a list of mbuild.Compound"
         if not fractions:
