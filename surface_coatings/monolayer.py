@@ -118,7 +118,7 @@ class DualMonolayer(mb.Compound):
         bot_box = bottom.get_boundingbox()
         z_val = bot_box.lengths[2]
         top.translate([0, 0, z_val + separation])
-        if top.name and bottom.name:
+        if (top.name and bottom.name) and (top.name != bottom.name):
             self.add(top, label=top.name)
             self.add(bottom, label=bottom.name)
         else:
