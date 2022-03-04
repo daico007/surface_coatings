@@ -31,10 +31,7 @@ class CrystalineSilicon(mb.Compound):
         # populate lattice with compounds
         si_lattice = diamond_lattice.populate(compound_dict={'A' : si}, x=x, y=y, z=z)
         si_lattice.periodicity = [True, True, False]
-        if "freud_generate_bonds" in dir(si_lattice):
-            si_lattice.freud_generate_bonds(name_a='Si', name_b='Si', dmin=0, dmax=0.236)
-        else:
-            si_lattice.generate_bonds(name_a='Si', name_b='Si', dmin=0, dmax=0.236)
+        si_lattice.freud_generate_bonds(name_a='Si', name_b='Si', dmin=0, dmax=0.236)
         self.add(si_lattice)
         self.periodicity = si_lattice.periodicity
 
