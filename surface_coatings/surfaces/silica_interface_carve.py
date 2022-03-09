@@ -85,7 +85,7 @@ class SilicaInterfaceCarve(mb.Compound):
         for i, particle in enumerate(bulk.particles()):
             if ((particle.name == 'Si' and O_buffer < particle.pos[2] < (thickness + O_buffer)) or 
                     (particle.name == 'O' and particle.pos[2] < (thickness + 2*O_buffer))):
-                interface_particle = mb.Compound(name=particle.name, pos=particle.pos)
+                interface_particle = mb.Compound(name=particle.name, pos=particle.pos, element=particle.name)
                 interface.add(interface_particle, particle.name + "_{}".format(i))
         self.add(interface)
 
