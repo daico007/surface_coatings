@@ -111,14 +111,20 @@ class DualMonolayer(mb.Compound):
     separation: float, optional, default=0.8
         The separation between the two surfaces.
     """
-    def __init__(self, top, bottom, separation=0.8):
+    def __init__(self, top, bottom, separation=0.8, shift=False):
         super(DualMonolayer, self).__init__()
         top.spin(np.pi, around=[0, 1, 0])
 
         bot_box = bottom.get_boundingbox()
         z_val = bot_box.lengths[2]
         top.translate([0, 0, z_val + separation])
-        if top.name and bottom.name:
+
+        if shift:
+            top.translate([bottom.pos[0] - top.pos[0],
+                           bottom.pos[1] - top.pos[1],
+                           0])
+
+        if (top.name and bottom.name) and (top.name != bottom.name):
             self.add(top, label=top.name)
             self.add(bottom, label=bottom.name)
         else:
