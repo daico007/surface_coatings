@@ -10,7 +10,7 @@ from surface_coatings.monomers import (AzPMA, SBMA, Methacrylate, TriazoleBiotin
 class VBCPolymer(mb.Compound):
     def __init__(self, monomers=[Methacrylate(), SBMA(), AzPMA(), TriazoleBiotin()], n=1,
                  sequence='AABCBBD', port_labels=('up', 'down')):
-        """This is a general purpose to create a Vinylbenzyl Polymer
+        """This is a general method to create a Vinylbenzyl Polymer
 
         Parameters
         ----------
@@ -25,14 +25,14 @@ class VBCPolymer(mb.Compound):
             and the last port will be capped by a Hydrogen
         """
         super(VBCPolymer, self).__init__()
-        copolymer = Polymer(monomers=monomers)
-        copolymer.build(n=n, sequence=sequence, add_hydrogens=False)
-        self.add(copolymer, label="Polymer")
+        polymer = Polymer(monomers=monomers)
+        polymer.build(n=n, sequence=sequence, add_hydrogens=False)
+        self.add(polymer, label="Polymer")
         vbc = MethylStyrene()
         self.add(vbc, label="VBC")
         mb.force_overlap(vbc,
                          vbc['up'],
-                         copolymer[port_labels[0]])
+                         polymer[port_labels[0]])
         for port in self.all_ports():
             if port.access_labels:
                 self.labels['up'] = port
