@@ -1,9 +1,11 @@
 """Routines to create (dual) monolayer systems."""
+from copy import deepcopy
+from warnings import warn
+
 import numpy as np
 
 import mbuild as mb
 from mbuild.lib.atoms import H
-from mbuild.lib.recipes import Monolayer
 
 
 class Monolayer(mb.Compound):
@@ -13,20 +15,24 @@ class Monolayer(mb.Compound):
     ----------
     surface: mb.Compound
         The surface with ports at its surface.
-    chain: mb.Compound
-        The chain that to be attached to the surfaces.
+    chains: list of mb.Compound
+        The chains that are to be attached to the surface.
     n_chains: int
         The number of chains to be attached.
+    fractions: list of fraction of floats, default=None
+        The list of fractions to fill for each compound in `chains`. If 
+        the value is not specified, the chains will be proportional on 
+        the surface.
     backfill: mb.Compound, optional, default=H()
         Compound used to backfill leftover ports (after all chains have been attached.
     tile_x, tile_y: int, optional, default= 1, 1
         The number of surface tiles.
-    rotate: bool, optional, default=True
+    rotate_chains: bool, optional, default=True
         Options to rotate the chain randomly.
     seed: int, optional, default= 12345
         Random seed used for any subprocess.
     """
-    def __init__(self, surface, chain, n_chains, backfill=H(), tile_x=1, tile_y=1, rotate=True, seed=12345, **kwargs):
+    def __init__(self, surface, chains, n_chains, fractions=None, backfill=H(), tile_x=1, tile_y=1, rotate_chains=True, seed=12345, **kwargs):
         super(Monolayer, self).__init__()
 
         tiled_compound = mb.lib.recipes.TiledCompound(surface, n_tiles=(tile_x, tile_y, 1))
@@ -34,15 +40,57 @@ class Monolayer(mb.Compound):
 
         pattern = mb.Random2DPattern(n_chains, seed=seed)
 
+        if not isinstance(chains, list):
+            assert isinstance(chains, mb.Compound)
+            chains = [chains]
+        for chain in chains:
+            assert isinstance(chain, mb.Compound), "Please provide chains as a list of mbuild.Compound"
+        if not fractions:
+            fractions = [1 / len(chains) for _ in range(len(chains))]
+        if isinstance(fractions, (float, int)):
+            assert fractions == 1
+            fractions = list(fractions)
+        elif isinstance(fractions, (list, tuple)):
+            assert np.sum(fractions) == 1
+        else:
+            raise TypeError(f"Fractions has been provided as type {type(fractions)}. Please provide a list of floats.")
+        if len(chains) != len(fractions):
+            raise ValueError("Number of fractions does not match the number of chain types provided.")
+
         # Attach final chains, remaining sites get a backfill)
-        attached_chains, backills = pattern.apply_to_compound(guest=chain,
+        # Attach chains of each type to binding sites based on
+        # respective fractions.
+        if len(chains) > 1:
+            for chain, fraction in zip(chains[:-1], fractions[:-1]):
+                # Create sub-pattern for this chain type
+                subpattern = deepcopy(pattern)
+                n_points = int(round(fraction * n_chains))
+                warn("\n Adding {} of chain {}".format(n_points, chain))
+                pick = np.random.choice(subpattern.points.shape[0], n_points,
+                                        replace=False)
+                points = subpattern.points[pick]
+                subpattern.points = points
+
+                # Remove now-occupied points from overall pattern
+                pattern.points = np.array([point for point in pattern.points.tolist()
+                                           if point not in subpattern.points.tolist()])
+
+                # Attach chains to the surface
+                attached_chains, _ = subpattern.apply_to_compound(
+                    guest=chain, host=self['tiled_surface'], backfill=None, **kwargs)
+                self.add(attached_chains)
+
+        else:
+            warn("\n No fractions provided. Assuming a single chain type.")
+
+        attached_chains, backfills = pattern.apply_to_compound(guest=chains[-1],
                                                               host=self["tiled_surface"],
                                                               backfill=backfill,
                                                               **kwargs)
         self.add(attached_chains)
-        self.add(backills)
+        self.add(backfills)
 
-        if rotate:
+        if rotate_chains:
             np.random.seed(seed)
             for chain in attached_chains:
                 rotation = np.random.random() * np.pi * 2.0
@@ -63,14 +111,22 @@ class DualMonolayer(mb.Compound):
     separation: float, optional, default=0.8
         The separation between the two surfaces.
     """
-    def __init__(self, top, bottom, separation=0.8):
+    def __init__(self, top, bottom, separation=0.8, shift=False):
         super(DualMonolayer, self).__init__()
         top.spin(np.pi, around=[0, 1, 0])
-        top_box = top.get_boundingbox()
+
         bot_box = bottom.get_boundingbox()
-
         z_val = bot_box.lengths[2]
-
         top.translate([0, 0, z_val + separation])
-        self.add(top, label="top_monolayer")
-        self.add(bottom, label="bottom_monolayer")
+
+        if shift:
+            top.translate([bottom.pos[0] - top.pos[0],
+                           bottom.pos[1] - top.pos[1],
+                           0])
+
+        if (top.name and bottom.name) and (top.name != bottom.name):
+            self.add(top, label=top.name)
+            self.add(bottom, label=bottom.name)
+        else:
+            self.add(top, label="top_monolayer")
+            self.add(bottom, label="bottom_monolayer")
