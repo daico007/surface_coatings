@@ -4,5 +4,4 @@ from .methacrylate import Methacrylate
 from .methylstyrene_initiator import MethylStyrene
 from .triazolebiotin import TriazoleBiotin
 
-from .silane_initiator import Silane
 from .mpc import MPC
