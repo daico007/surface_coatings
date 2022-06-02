@@ -4,7 +4,7 @@ import mbuild as mb
 from mbuild.lib.recipes import Polymer
 import numpy as np
 
-from surface_coatings.monomers import Silane
+from mbuild.lib.moieties import Silane
 from surface_coatings.monomers import MPC
 
 
