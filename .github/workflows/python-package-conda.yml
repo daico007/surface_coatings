@@ -23,10 +23,12 @@ jobs:
         uname -a
         df -h
         ulimit -a
-    - uses: conda-incubator/setup-miniconda@v2
+    - uses: mamba-org/provision-with-micromamba@main
       with:
         python-version: ${{ matrix.python-version }}
         environment-file: environment.yml
+        extra-specs: | 
+          python=${{ matrix.python-version }}
         channels: conda-forge, defaults
         activate-environment: surface-coatings
         auto-update-conda: false
