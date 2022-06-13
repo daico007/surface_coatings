@@ -73,6 +73,7 @@ class pNBDAC(mb.Compound):
         """
         super(pNBDAC, self).__init__()
         if monomer:
+            assert isinstance(monomer, fmNBDAC)
             if side_chains and terminal_groups:
                 warnings.warn("Both monomer and (side_chains, terminal_groups) are provided,"
                               "only monomer will be used to construct the polymer."
@@ -83,6 +84,7 @@ class pNBDAC(mb.Compound):
         polymer = Polymer(monomers=[monomer])
         polymer.build(n=n, add_hydrogens=False)
         self.add(polymer, "Polymer")
+
         if silane_buffer:
             silane = Silane()
             self.add(silane, label="Silane")
