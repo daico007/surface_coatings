@@ -1,6 +1,5 @@
 import mbuild as mb
 
-
 class MPC(mb.Compound):
     """A 2-(methacryloloxy) ethyl phosophorylcholine monomer."""
     def __init__(self, alpha=0):
