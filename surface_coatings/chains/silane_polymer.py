@@ -22,7 +22,7 @@ class SilanePolymer(mb.Compound):
             The sequence of all the monomer, corresponding ot the monomers list
         port_labels: tuple, optional, default=('up', 'donw')
             The list of ports of the monomers. The Silane will connect to the first port
-            and the last port will be capped by a Hydrogen.
+            and the last port will be capped by a Hydrogen
         """
         super(SilanePolymer, self).__init__()
         polymer = Polymer(monomers=monomers)
