@@ -6,7 +6,9 @@ class AminoPropyl(mb.Compound):
         mb.load("amino_propyl.mol2",
                  compound=self,
                  backend="gmso",
-                 relative_to_module=self.__module__)
+                 relative_to_module=self.__module__,
+                 infer_hierarchy=False)
+
         to_remove = [self[5], self[12]]
         for part in to_remove:
             self.remove(part)
