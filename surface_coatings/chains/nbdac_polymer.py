@@ -54,7 +54,7 @@ class fmNBDAC(mb.Compound):
 
 class pNBDAC(mb.Compound):
     def __init__(self, monomer, side_chains=AminoPropyl(), terminal_groups=Acetaldehyde(),
-                 silane_buffer=True, cap=None, n=1, port_labels=('up', 'down')):
+                 silane_buffer=True, cap_front=True, cap_end=False, n=1, port_labels=('up', 'down')):
         """This is a general method to create a NBDAC polymer with varying side chains/terminal groups.
 
         Parameters
@@ -63,6 +63,10 @@ class pNBDAC(mb.Compound):
             Side chains attached to NBDAC monomer
         terminal_groups: mb.Compound or list of Compounds (len 2)
             Terminal groups which will be matched with side chains
+        cap_front : bool, optional, default=True
+            Cap the front of the polymer (NBDAC end)
+        cap_end : bool, optional, default=False
+            Cap the end of the polymer (Silane end)
         silane_buffer : int, optional, default=1
             Silane monomer used to buffer at one end of the NBDAC polymer
         n : int, optional, default=1
@@ -98,10 +102,15 @@ class pNBDAC(mb.Compound):
             self.labels["up"] = self["Polymer"]["up"]
             self.labels["down"] = self["Polymer"]["down"]
 
-        if cap:
-            if isinstance(cap, mb.Compound):
-                mb.force_overlap(move_this=cap,
-                                 from_positions=cap["up"],
-                                 to_positions=self["down"])
-
-
+        if cap_front:
+            front_cap = H()
+            self.add(front_cap)
+            mb.force_overlap(move_this=front_cap,
+                             from_positions=front_cap["up"],
+                             to_positions=self["up"])
+        if cap_end:
+            end_cap = H()
+            self.add(end_cap)
+            mb.force_overlap(move_this=end_cap,
+                             from_positions=end_cap["up"],
+                             to_positions=self["down"])
