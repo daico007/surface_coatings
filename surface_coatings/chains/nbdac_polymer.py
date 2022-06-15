@@ -3,6 +3,7 @@
 import mbuild as mb
 from mbuild.lib.recipes import Polymer
 from mbuild.lib.moieties import Silane
+from mbuild.lib.moieties import CH2
 from mbuild.lib.atoms import H
 
 from surface_coatings.monomers import mNBDAC
@@ -90,14 +91,21 @@ class pNBDAC(mb.Compound):
         self.add(polymer, "Polymer")
 
         if silane_buffer:
-            silane = Silane()
-            self.add(silane, label="Silane")
-            mb.force_overlap(silane,
-                             silane['up'],
+            tail = mb.Compound(name="tail")
+            tail.add(Silane(), "Silane")
+            tail.add(CH2(), "CH2")
+
+            mb.force_overlap(tail["Silane"],
+                             tail["Silane"]['up'],
+                             tail["CH2"]['down'])
+
+            self.add(tail, "tail")
+            mb.force_overlap(tail,
+                             tail["CH2"]["up"],
                              polymer[port_labels[0]])
 
             self.labels["up"] = self["Polymer"]["down"]
-            self.labels["down"] = self["Silane"]["down"]
+            self.labels["down"] = self["tail"]["Silane"]["down"]
         else:
             self.labels["up"] = self["Polymer"]["up"]
             self.labels["down"] = self["Polymer"]["down"]
