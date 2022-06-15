@@ -5,4 +5,4 @@ from .methylstyrene_initiator import MethylStyrene
 from .triazolebiotin import TriazoleBiotin
 
 from .mpc.mpc import MPC
-from .mnbdac.mnbdac import mNBDAC
+from .mnbdac.mNBDAC import mNBDAC
