@@ -10,7 +10,7 @@ class Toluidine(mb.Compound):
                 relative_to_module=self.__module__,
                 infer_hierarchy=False)
 
-        to_remove = [self[[8], self[15]]]
+        to_remove = [self[8], self[15]]
         for part in to_remove:
             self.remove(part)
 

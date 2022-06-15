@@ -12,4 +12,3 @@ class Hexafluorobenzene(mb.Compound):
 
         self.remove(self[7])
         self.labels["terminal"] = self["Compound[0]"].labels.pop("port[1]")
-
