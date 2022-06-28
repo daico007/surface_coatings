@@ -93,18 +93,24 @@ class pNBDAC(mb.Compound):
         if silane_buffer:
             tail = mb.Compound(name="tail")
             tail.add(Silane(), "Silane")
-            tail.add(CH2(), "CH2")
+            tail.add(CH2(), "CH2_0")
+
+            for i in range(1):
+                tail.add(CH2(), f"CH2_{i+1}")
+                mb.force_overlap(tail[f"CH2_{i+1}"],
+                                 tail[f"CH2_{i+1}"]["down"],
+                                 tail[f"CH2_{i}"]["up"])
 
             mb.force_overlap(tail["Silane"],
                              tail["Silane"]['up'],
-                             tail["CH2"]['down'])
+                             tail[f"CH2_0"]['down'])
 
             self.add(tail, "tail")
             mb.force_overlap(tail,
-                             tail["CH2"]["up"],
+                             tail[f"CH2_{i+1}"]["up"],
                              polymer[port_labels[0]])
 
-            self.labels["up"] = self["Polymer"]["down"]
+            self.labels["up"] = self["Polymer"][port_labels[1]]
             self.labels["down"] = self["tail"]["Silane"]["down"]
         else:
             self.labels["up"] = self["Polymer"]["up"]
@@ -112,13 +118,13 @@ class pNBDAC(mb.Compound):
 
         if cap_front:
             front_cap = H()
-            self.add(front_cap)
+            self.add(front_cap, "front_cap")
             mb.force_overlap(move_this=front_cap,
                              from_positions=front_cap["up"],
                              to_positions=self["up"])
         if cap_end:
             end_cap = H()
-            self.add(end_cap)
+            self.add(end_cap, "end_cap")
             mb.force_overlap(move_this=end_cap,
                              from_positions=end_cap["up"],
                              to_positions=self["down"])
