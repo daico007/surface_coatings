@@ -4,6 +4,7 @@ import mbuild as mb
 from mbuild.lib.recipes import Polymer
 import numpy as np
 
+from mbuild.lib.atoms import H
 from mbuild.lib.moieties import Silane
 from surface_coatings.monomers import MPC
 
@@ -25,14 +26,14 @@ class SilanePolymer(mb.Compound):
             and the last port will be capped by a Hydrogen
         """
         super(SilanePolymer, self).__init__()
-        polymer = Polymer(monomers=monomers)
+        end_groups = [H(), Silane()]
+        polymer = Polymer(monomers=monomers, end_groups=end_groups)
         polymer.build(n=n, sequence=sequence, add_hydrogens=False)
         self.add(polymer, label="Polymer")
-        silane = Silane()
-        self.add(silane, label="Silane")
-        mb.force_overlap(silane,
-                         silane['up'],
-                         polymer[port_labels[0]])
+        for i in range(n):
+            assert polymer.children[i] not in end_groups
+            polymer.children[i].rotate(theta=2 * i * np.pi / n, around=[0, 1, 0])
 
-        self.labels["up"] = self["Polymer"]["down"]
-        self.labels["down"] = self["Silane"]["down"]
+        si = list(self.particles_by_name("Si"))[0]
+        port = mb.Port(anchor=si, orientation=[0, -1, 0], separation=0.07)
+        self.add(port, "down")
