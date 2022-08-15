@@ -3,7 +3,7 @@ import mbuild as mb
 from mbuild.lib.recipes import Polymer
 import numpy as np
 
-from surface_coatings.monomers import MethylStyrene
+from surface_coatings.monomers import VBC
 from surface_coatings.monomers import (AzPMA, SBMA, Methacrylate, TriazoleBiotin)
 
 
@@ -28,7 +28,7 @@ class VBCPolymer(mb.Compound):
         polymer = Polymer(monomers=monomers)
         polymer.build(n=n, sequence=sequence, add_hydrogens=False)
         self.add(polymer, label="Polymer")
-        vbc = MethylStyrene()
+        vbc = VBC()
         self.add(vbc, label="VBC")
         mb.force_overlap(vbc,
                          vbc['up'],
