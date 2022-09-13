@@ -94,7 +94,7 @@ class Monolayer(mb.Compound):
             np.random.seed(seed)
             for chain in attached_chains:
                 rotation = np.random.random() * np.pi * 2.0
-                chain.spin(rotation, [0, 0, 1])
+                chain.spin(rotation, [0, 0, 1], anchor=chain[0])
 
         self.periodicity = surface.periodicity
 
