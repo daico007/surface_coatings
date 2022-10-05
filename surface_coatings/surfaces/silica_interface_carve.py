@@ -64,7 +64,7 @@ class SilicaInterfaceCarve(mb.Compound):
 
         self._cleave_interface(bulk_silica, tile_x, tile_y, thickness)
         self.periodicity = [True, True, False]
-        self.box = bulk_silica.box
+        self.box = self.get_boundingbox()
         self.freud_generate_bonds(name_a='Si', name_b='O', dmin=0.0, dmax=0.20419)
         self._strip_stray_atoms()
         self._bridge_dangling_Os(self._oh_density, thickness)
@@ -78,7 +78,8 @@ class SilicaInterfaceCarve(mb.Compound):
         interface is coated.
         """
         O_buffer = self._O_buffer
-        tile_z = int(math.ceil((thickness + 2*O_buffer) / bulk_silica.periodicity[2]))
+        z_dim = bulk_silica.get_boundingbox().lengths[2]
+        tile_z = int(math.ceil((thickness + 2*O_buffer) / z_dim))
         bulk = mb.lib.recipes.TiledCompound(bulk_silica, n_tiles=(tile_x, tile_y, tile_z))
 
         interface = mb.Compound(periodicity=(True, True, False))

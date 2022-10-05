@@ -94,7 +94,7 @@ class Monolayer(mb.Compound):
             np.random.seed(seed)
             for chain in attached_chains:
                 rotation = np.random.random() * np.pi * 2.0
-                chain.spin(rotation, [0, 0, 1])
+                chain.spin(rotation, [0, 0, 1], anchor=chain[0])
 
         self.periodicity = surface.periodicity
 
@@ -110,8 +110,10 @@ class DualMonolayer(mb.Compound):
         The bottom surface of the dual-monolayer.
     separation: float, optional, default=0.8
         The separation between the two surfaces.
+    shift: bool, optional, default=True
+        Shift the top surface to align with the bottom surface
     """
-    def __init__(self, top, bottom, separation=0.8, shift=False):
+    def __init__(self, top, bottom, separation=0.8, shift=True):
         super(DualMonolayer, self).__init__()
         top.spin(np.pi, around=[0, 1, 0])
 
@@ -119,10 +121,24 @@ class DualMonolayer(mb.Compound):
         z_val = bot_box.lengths[2]
         top.translate([0, 0, z_val + separation])
 
+        # Calculated top surface coords
+        xs, ys, zs = list(), list(), list()
+        for pos in top["tiled_surface"].xyz:
+            xs.append(pos[0]), ys.append(pos[1]), zs.append(pos[2])
+        xs.sort(), ys.sort(), zs.sort()
+        top_coords = ((xs[0], xs[-1]), (ys[0], ys[-1]), (zs[0], zs[-1]))
+
+        # Calculate bottom surface coords
+        xs, ys, zs = list(), list(), list()
+        for pos in bottom["tiled_surface"].xyz:
+            xs.append(pos[0]), ys.append(pos[1]), zs.append(pos[2])
+        xs.sort(), ys.sort(), zs.sort()
+        bot_coords = ((xs[0], xs[-1]), (ys[0], ys[-1]), (zs[0], zs[-1]))
+
         if shift:
-            top.translate([bottom.pos[0] - top.pos[0],
-                           bottom.pos[1] - top.pos[1],
-                           0])
+            top.translate([bot_coords[0][0]-top_coords[0][0],
+                          bot_coords[1][0]-top_coords[1][0],
+                          0])
 
         if (top.name and bottom.name) and (top.name != bottom.name):
             self.add(top, label=top.name)
