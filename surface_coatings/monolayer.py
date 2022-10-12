@@ -20,8 +20,8 @@ class Monolayer(mb.Compound):
     n_chains: int
         The number of chains to be attached.
     fractions: list of fraction of floats, default=None
-        The list of fractions to fill for each compound in `chains`. If 
-        the value is not specified, the chains will be proportional on 
+        The list of fractions to fill for each compound in `chains`. If
+        the value is not specified, the chains will be proportional on
         the surface.
     backfill: mb.Compound, optional, default=H()
         Compound used to backfill leftover ports (after all chains have been attached.
@@ -96,6 +96,11 @@ class Monolayer(mb.Compound):
                 rotation = np.random.random() * np.pi * 2.0
                 chain.spin(rotation, [0, 0, 1], anchor=chain[0])
 
+        system_box_lengths = [self["tiled_surface"].get_boundingbox().lengths[0],
+                              self["tiled_surface"].get_boundingbox().lengths[1],
+                              self.get_boundingbox().lengths[2]]
+
+        self.box = mb.Box(system_box_lengths)
         self.periodicity = surface.periodicity
 
 
@@ -118,6 +123,7 @@ class DualMonolayer(mb.Compound):
         top.spin(np.pi, around=[0, 1, 0])
 
         bot_box = bottom.get_boundingbox()
+        top_box = top.get_boundingbox()
         z_val = bot_box.lengths[2]
         top.translate([0, 0, z_val + separation])
 
@@ -146,3 +152,10 @@ class DualMonolayer(mb.Compound):
         else:
             self.add(top, label="top_monolayer")
             self.add(bottom, label="bottom_monolayer")
+
+
+        system_box_lengths = [max(top_box.lengths[0], bot_box.lengths[0]),
+                              max(top_box.lengths[1], bot_box.lengths[1]),
+                              self.get_boundingbox().lengths[2]]
+        self.box = mb.Box(system_box_lengths)
+        self.periodicity = bottom.periodicity
