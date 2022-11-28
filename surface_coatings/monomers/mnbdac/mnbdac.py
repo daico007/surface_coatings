@@ -16,11 +16,21 @@ class mNBDAC(mb.Compound):
         for h in h_to_remove:
             self.remove(h)
         
-        self.labels["up"] = self["Compound[0]"].labels.pop("port[1]")
-        self.labels["down"] = self["Compound[0]"].labels.pop("port[7]")
-        
-         
+        up_port = self["Compound[0]"].labels.pop("port[1]")
+        down_port = self["Compound[0]"].labels.pop("port[7]")
+
+        up_port.referrers.add(self)
+        down_port.referrers.add(self)
+        self.labels["up"] = up_port
+        self.labels["down"] = down_port
+
         for cl in cl_to_remove:
             self.remove(cl)
-        self.labels['side0'] = self["Compound[0]"].labels.pop("port[13]")
-        self.labels['side1'] = self["Compound[0]"].labels.pop("port[15]")
+
+        side0_port = self["Compound[0]"].labels.pop("port[13]")
+        side1_port = self["Compound[0]"].labels.pop("port[15]")
+
+        side0_port.referrers.add(self)
+        side1_port.referrers.add(self)
+        self.labels['side0'] = side0_port
+        self.labels['side1'] = side1_port

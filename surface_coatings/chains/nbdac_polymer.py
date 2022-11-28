@@ -1,4 +1,5 @@
 """Routine to create nBDAC polymer."""
+import numpy as np
 
 import mbuild as mb
 from mbuild.lib.recipes import Polymer
@@ -88,6 +89,24 @@ class pNBDAC(mb.Compound):
 
         polymer = Polymer(monomers=[monomer])
         polymer.build(n=n, add_hydrogens=False)
+
+        # Reorient the down port so the backbone is linear-ish
+        up_port = polymer[port_labels[0]] #polymer["up"]
+        up_anchor = up_port.anchor
+        down_port = polymer[port_labels[1]] #polymer["down"]
+        down_anchor = down_port.anchor
+        vector = down_anchor.pos - up_anchor.pos
+        norm_vec = vector / np.sqrt(np.sum(vector**2))
+
+        # Remove the old down port
+        polymer.remove(down_port)
+        #polymer.labels.pop(port_labels[1])
+
+        # Add new down port with adjusted orientation
+        ndown_port = mb.Port(anchor=down_anchor,
+                            orientation=norm_vec,
+                            separation=0.07)
+        polymer.add(ndown_port, port_labels[1])
         self.add(polymer, "Polymer")
 
         if silane_buffer:
@@ -108,23 +127,23 @@ class pNBDAC(mb.Compound):
             self.add(tail, "tail")
             mb.force_overlap(tail,
                              tail[f"CH2_{i+1}"]["up"],
-                             polymer[port_labels[0]])
+                             polymer[port_labels[1]])
 
-            self.labels["up"] = self["Polymer"][port_labels[1]]
-            self.labels["down"] = self["tail"]["Silane"]["down"]
+            self.labels[port_labels[0]] = self["Polymer"][port_labels[0]]
+            self.labels[port_labels[1]] = self["tail"]["Silane"]["down"]
         else:
-            self.labels["up"] = self["Polymer"]["up"]
-            self.labels["down"] = self["Polymer"]["down"]
+            self.labels[port_labels[0]] = self["Polymer"][port_labels[0]]
+            self.labels[port_labels[1]] = self["Polymer"][port_labels[1]]
 
         if cap_front:
             front_cap = H()
             self.add(front_cap, "front_cap")
             mb.force_overlap(move_this=front_cap,
                              from_positions=front_cap["up"],
-                             to_positions=self["up"])
+                             to_positions=self[port_labels[0]])
         if cap_end:
             end_cap = H()
             self.add(end_cap, "end_cap")
             mb.force_overlap(move_this=end_cap,
                              from_positions=end_cap["up"],
-                             to_positions=self["down"])
+                             to_positions=self[port_labels[1]])
