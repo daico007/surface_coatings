@@ -1,4 +1,5 @@
 """Routines to construct solvated (dual) monolayer."""
+from os import system
 import numpy as np
 import mbuild as mb
 from mbuild.lib.moieties import H2O
@@ -43,6 +44,12 @@ class SolvatedMonolayer(mb.Compound):
         self.add(monolayer, label="monolayer")
         self.add(box_of_solvent, label="solvent")
 
+        system_box_lengths = [monolayer_box_lengths[0],
+                              monolayer_box_lengths[1],
+                              monolayer_box_lengths[2] + solvent_box_height]
+        self.box = mb.Box(system_box_lengths)
+        self.periodicity = monolayer.periodicity
+
 
 class SolvatedDualMonolayer(mb.Compound):
     """Solvated dual-monolayer system.
@@ -62,6 +69,7 @@ class SolvatedDualMonolayer(mb.Compound):
         super(SolvatedDualMonolayer, self).__init__()
         top_monolayer = dual_monolayer["top_monolayer"]
         top_monolayer_box_lengths = top_monolayer.get_boundingbox().lengths
+        top_surface_box_lenghts = top_monolayer["tiled_surface"].get_boundingbox().lengths
 
         bottom_monolayer = dual_monolayer["bottom_monolayer"]
         bottom_monolayer_box_lengths = bottom_monolayer.get_boundingbox().lengths
@@ -88,3 +96,11 @@ class SolvatedDualMonolayer(mb.Compound):
                                   bottom_monolayer_box_lengths[2]])
         self.add(dual_monolayer, label="monolayers")
         self.add(box_of_solvent, label="solvents")
+
+        system_box_lengths = [max(top_surface_box_lenghts[0], bottom_surface_box_lengths[0]),
+                              max(top_surface_box_lenghts[1], bottom_surface_box_lengths[1]),
+                              self.get_boundingbox().lengths[2]]
+        self.box = mb.Box(system_box_lengths)
+        self.periodicity = bottom_monolayer.periodicity
+
+
