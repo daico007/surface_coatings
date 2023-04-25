@@ -47,10 +47,10 @@ class SilicaInterfaceCarve(mb.Compound):
 
     """
 
-    def __init__(self, bulk_silica=AmorphousSilicaBulk(),
-                 tile_x=1, tile_y=1, thickness=1.0, seed=12345):
+    def __init__(self, tile_x=1, tile_y=1, thickness=1.0, seed=12345):
         super(SilicaInterfaceCarve, self).__init__()
 
+        bulk_silica = AmorphousSilicaBulk()
         random.seed(seed)
         self._oh_density = 5.0
         self._O_buffer = 0.275
@@ -65,7 +65,8 @@ class SilicaInterfaceCarve(mb.Compound):
         self._cleave_interface(bulk_silica, tile_x, tile_y, thickness)
         self.periodicity = [True, True, False]
         self.box = self.get_boundingbox()
-        self.freud_generate_bonds(name_a='Si', name_b='O', dmin=0.0, dmax=0.20419)
+        self.freud_generate_bonds(
+            name_a='Si', name_b='O', dmin=0.0, dmax=0.20419)
         self._strip_stray_atoms()
         self._bridge_dangling_Os(self._oh_density, thickness)
         self._identify_surface_sites(thickness)
@@ -80,14 +81,17 @@ class SilicaInterfaceCarve(mb.Compound):
         O_buffer = self._O_buffer
         z_dim = bulk_silica.get_boundingbox().lengths[2]
         tile_z = int(math.ceil((thickness + 2*O_buffer) / z_dim))
-        bulk = mb.lib.recipes.TiledCompound(bulk_silica, n_tiles=(tile_x, tile_y, tile_z))
+        bulk = mb.lib.recipes.TiledCompound(
+            bulk_silica, n_tiles=(tile_x, tile_y, tile_z))
 
         interface = mb.Compound(periodicity=(True, True, False))
         for i, particle in enumerate(bulk.particles()):
-            if ((particle.name == 'Si' and O_buffer < particle.pos[2] < (thickness + O_buffer)) or 
+            if ((particle.name == 'Si' and O_buffer < particle.pos[2] < (thickness + O_buffer)) or
                     (particle.name == 'O' and particle.pos[2] < (thickness + 2*O_buffer))):
-                interface_particle = mb.Compound(name=particle.name, pos=particle.pos, element=particle.name)
-                interface.add(interface_particle, particle.name + "_{}".format(i))
+                interface_particle = mb.Compound(
+                    name=particle.name, pos=particle.pos, element=particle.name)
+                interface.add(interface_particle,
+                              particle.name + "_{}".format(i))
         self.add(interface)
 
     def _strip_stray_atoms(self):
@@ -116,7 +120,7 @@ class SilicaInterfaceCarve(mb.Compound):
         dangling_Os = [atom for atom in self.particles()
                        if atom.name == 'O' and
                        atom.pos[2] > surface_site_buffer and
-                       len(self.bond_graph.neighbors(atom)) == 1]
+                       len(list(self.bond_graph.neighbors(atom))) == 1]
 
         n_bridges = int((len(dangling_Os) - target) / 2)
 
@@ -124,14 +128,14 @@ class SilicaInterfaceCarve(mb.Compound):
             bridged = False
             while not bridged:
                 O1 = random.choice(dangling_Os)
-                Si1 = self.bond_graph.neighbors(O1)[0]
+                Si1 = list(self.bond_graph.neighbors(O1))[0]
                 for O2 in dangling_Os:
                     if O2 == O1:
                         continue
-                    Si2 = self.bond_graph.neighbors(O2)[0]
+                    Si2 = list(self.bond_graph.neighbors(O2))[0]
                     if Si1 == Si2:
                         continue
-                    if any(neigh in self.bond_graph.neighbors(Si2)
+                    if any(neigh in list(self.bond_graph.neighbors(Si2))
                            for neigh in self.bond_graph.neighbors(Si1)):
                         continue
                     r = self.min_periodic_distance(Si1.pos, Si2.pos)
@@ -147,13 +151,14 @@ class SilicaInterfaceCarve(mb.Compound):
         """Label surface sites and add ports above them. """
         surface_site_buffer = self._surface_site_buffer
         for atom in list(self.particles()):
-            if len(self.bond_graph.neighbors(atom)) == 1:
+            if len(list(self.bond_graph.neighbors(atom))) == 1:
                 if atom.name == 'O' and atom.pos[2] > surface_site_buffer:
                     atom.name = 'O_Surface'
                     port = mb.Port(anchor=atom)
                     port.spin(np.pi/2, [1, 0, 0])
                     port.translate(np.array([0.0, 0.0, 0.1]))
-                    self.add(port, "port_{}".format(len(self.referenced_ports())))
+                    self.add(port, "port_{}".format(
+                        len(self.referenced_ports())))
 
     def _adjust_stoichiometry(self):
         """Remove O's from underside of surface to yield a 2:1 Si:O ratio. """
@@ -163,8 +168,8 @@ class SilicaInterfaceCarve(mb.Compound):
 
         bottom_Os = [atom for atom in self.particles()
                      if atom.name == 'O' and
-                        atom.pos[2] < self._O_buffer and
-                        len(self.bond_graph.neighbors(atom)) == 1]
+                     atom.pos[2] < self._O_buffer and
+                     len(list(self.bond_graph.neighbors(atom))) == 1]
 
         for _ in range(n_deletions):
             O1 = random.choice(bottom_Os)
