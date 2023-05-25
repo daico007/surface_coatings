@@ -11,10 +11,11 @@ jobs:
     name: Unit Test on ${{ matrix.os  }}, Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       max-parallel: 5
       matrix:
         os: [macOS-latest, ubuntu-latest]
-        python-version: [3.9, 3.10]
+        python-version: ["3.9", "3.10"]
     steps:
     - uses: actions/checkout@v2
     - name: Additional info about the build
@@ -27,7 +28,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         environment-file: environment.yml
-        extra-specs: | 
+        extra-specs: |
           python=${{ matrix.python-version }}
         channels: conda-forge, defaults
         activate-environment: surface-coatings
