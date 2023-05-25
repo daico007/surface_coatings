@@ -5,6 +5,7 @@ dependencies:
   - mbuild
   - ele
   - foyer
+  - forcefield-utilities
   - gmso
   - pip
   - numpy

@@ -136,7 +136,7 @@ class SilicaInterfaceCarve(mb.Compound):
                     if Si1 == Si2:
                         continue
                     if any(neigh in list(self.bond_graph.neighbors(Si2))
-                           for neigh in self.bond_graph.neighbors(Si1)):
+                           for neigh in list(self.bond_graph.neighbors(Si1))):
                         continue
                     r = self.min_periodic_distance(Si1.pos, Si2.pos)
                     if r < 0.45:
@@ -168,8 +168,8 @@ class SilicaInterfaceCarve(mb.Compound):
 
         bottom_Os = [atom for atom in self.particles()
                      if atom.name == 'O' and
-                     atom.pos[2] < self._O_buffer and
-                     len(list(self.bond_graph.neighbors(atom))) == 1]
+                        atom.pos[2] < self._O_buffer and
+                        len(list(self.bond_graph.neighbors(atom))) == 1]
 
         for _ in range(n_deletions):
             O1 = random.choice(bottom_Os)
