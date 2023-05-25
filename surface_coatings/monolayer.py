@@ -20,8 +20,8 @@ class Monolayer(mb.Compound):
     n_chains: int
         The number of chains to be attached.
     fractions: list of fraction of floats, default=None
-        The list of fractions to fill for each compound in `chains`. If 
-        the value is not specified, the chains will be proportional on 
+        The list of fractions to fill for each compound in `chains`. If
+        the value is not specified, the chains will be proportional on
         the surface.
     backfill: mb.Compound, optional, default=H()
         Compound used to backfill leftover ports (after all chains have been attached.
@@ -32,19 +32,24 @@ class Monolayer(mb.Compound):
     seed: int, optional, default= 12345
         Random seed used for any subprocess.
     """
-    def __init__(self, surface, chains, n_chains, fractions=None, backfill=H(), tile_x=1, tile_y=1, rotate_chains=True, seed=12345, **kwargs):
+
+    def __init__(self, surface, pattern, chains, n_chains, fractions=None, backfill=H(), tile_x=1, tile_y=1, rotate_chains=True, seed=12345, **kwargs):
         super(Monolayer, self).__init__()
 
-        tiled_compound = mb.lib.recipes.TiledCompound(surface, n_tiles=(tile_x, tile_y, 1))
+        tiled_compound = mb.lib.recipes.TiledCompound(
+            surface, n_tiles=(tile_x, tile_y, 1))
         self.add(tiled_compound, label="tiled_surface")
 
-        pattern = mb.Random2DPattern(n_chains, seed=seed)
+        msg = "pattern must be the type of mb.Pattern"
+        assert isinstance(pattern, mb.Pattern), msg
+        # pattern = mb.Random2DPattern(n_chains, seed=seed)
 
         if not isinstance(chains, list):
             assert isinstance(chains, mb.Compound)
             chains = [chains]
         for chain in chains:
-            assert isinstance(chain, mb.Compound), "Please provide chains as a list of mbuild.Compound"
+            assert isinstance(
+                chain, mb.Compound), "Please provide chains as a list of mbuild.Compound"
         if not fractions:
             fractions = [1 / len(chains) for _ in range(len(chains))]
         if isinstance(fractions, (float, int)):
@@ -53,9 +58,11 @@ class Monolayer(mb.Compound):
         elif isinstance(fractions, (list, tuple)):
             assert np.sum(fractions) == 1
         else:
-            raise TypeError(f"Fractions has been provided as type {type(fractions)}. Please provide a list of floats.")
+            raise TypeError(
+                f"Fractions has been provided as type {type(fractions)}. Please provide a list of floats.")
         if len(chains) != len(fractions):
-            raise ValueError("Number of fractions does not match the number of chain types provided.")
+            raise ValueError(
+                "Number of fractions does not match the number of chain types provided.")
 
         # Attach final chains, remaining sites get a backfill)
         # Attach chains of each type to binding sites based on
@@ -84,9 +91,9 @@ class Monolayer(mb.Compound):
             warn("\n No fractions provided. Assuming a single chain type.")
 
         attached_chains, backfills = pattern.apply_to_compound(guest=chains[-1],
-                                                              host=self["tiled_surface"],
-                                                              backfill=backfill,
-                                                              **kwargs)
+                                                               host=self["tiled_surface"],
+                                                               backfill=backfill,
+                                                               **kwargs)
         self.add(attached_chains)
         self.add(backfills)
 
@@ -96,6 +103,11 @@ class Monolayer(mb.Compound):
                 rotation = np.random.random() * np.pi * 2.0
                 chain.spin(rotation, [0, 0, 1], anchor=chain[0])
 
+        system_box_lengths = [self["tiled_surface"].get_boundingbox().lengths[0],
+                              self["tiled_surface"].get_boundingbox().lengths[1],
+                              self.get_boundingbox().lengths[2]]
+
+        self.box = mb.Box(system_box_lengths)
         self.periodicity = surface.periodicity
 
 
@@ -113,11 +125,13 @@ class DualMonolayer(mb.Compound):
     shift: bool, optional, default=True
         Shift the top surface to align with the bottom surface
     """
+
     def __init__(self, top, bottom, separation=0.8, shift=True):
         super(DualMonolayer, self).__init__()
         top.spin(np.pi, around=[0, 1, 0])
 
         bot_box = bottom.get_boundingbox()
+        top_box = top.get_boundingbox()
         z_val = bot_box.lengths[2]
         top.translate([0, 0, z_val + separation])
 
@@ -146,3 +160,9 @@ class DualMonolayer(mb.Compound):
         else:
             self.add(top, label="top_monolayer")
             self.add(bottom, label="bottom_monolayer")
+
+        system_box_lengths = [max(top_box.lengths[0], bot_box.lengths[0]),
+                              max(top_box.lengths[1], bot_box.lengths[1]),
+                              self.get_boundingbox().lengths[2]]
+        self.box = mb.Box(system_box_lengths)
+        self.periodicity = bottom.periodicity
