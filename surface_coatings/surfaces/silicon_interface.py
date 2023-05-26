@@ -11,7 +11,7 @@ class CrystalineSilicon(mb.Compound):
     x, y, z: float, default= 10, 10, 10
         Dimension of the silicon block.
     """
-    def __init__(self, x=10, y=10, z=10):
+    def __init__(self, x, y, z):
         super(CrystalineSilicon, self).__init__()
         # define all necessary lattice parameters
         spacings = [0.54309, 0.54309, 0.54309]
@@ -22,7 +22,7 @@ class CrystalineSilicon(mb.Compound):
 
         # define lattice object
         diamond_lattice = mb.Lattice(lattice_spacing=spacings,
-                                     angles=angles, 
+                                     angles=angles,
                                      lattice_points={'A': points})
 
         # define Compound
@@ -48,8 +48,9 @@ class SiliconInterface(mb.Compound):
     seed: int, optional, default=12345
         Random seed used in some subprocess.
     """
-    def __init__(self, silicon=CrystalineSilicon(x=10, y=10, z=2), tile_x=1, tile_y=1, seed=12345):
+    def __init__(self, x, y, z, tile_x=1, tile_y=1, seed=12345):
         super(SiliconInterface, self).__init__()
+        silicon = CrystalineSilicon(x=x, y=y, z=z)
         tiled_compound = mb.lib.recipes.TiledCompound(mb.clone(silicon), n_tiles=(tile_x, tile_y, 1))
         self.add(tiled_compound)
         self._identify_surface_sites()
