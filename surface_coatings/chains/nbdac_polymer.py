@@ -1,4 +1,5 @@
 """Routine to create nBDAC polymer."""
+import numpy as np
 
 import mbuild as mb
 from mbuild.lib.recipes import Polymer
@@ -55,7 +56,7 @@ class fmNBDAC(mb.Compound):
 
 class pNBDAC(mb.Compound):
     def __init__(self, monomer, side_chains=AminoPropyl(), terminal_groups=Acetaldehyde(),
-                 silane_buffer=True, cap_front=True, cap_end=False, n=1, port_labels=('up', 'down')):
+                 silane_buffer=True, cap_front=True, cap_end=False, n=1, port_labels=('up', 'down'), align=True):
         """This is a general method to create a NBDAC polymer with varying side chains/terminal groups.
 
         Parameters
@@ -75,6 +76,9 @@ class pNBDAC(mb.Compound):
         port_labels: tuple, optional, default=('up', 'down')
             The list of ports of the monomers. The Silane will connect with the first port
             and the last port will be capped by a Hydrogen
+        algin : bool, optional, default=True
+            If True, align the port connected to the silane buffer with the rest of the polymer.
+            The goal is to create a straight polymer when grafted on a surface.
         """
         super(pNBDAC, self).__init__()
         if monomer:
@@ -106,6 +110,18 @@ class pNBDAC(mb.Compound):
                              tail[f"CH2_0"]['down'])
 
             self.add(tail, "tail")
+
+
+            if align:
+                polymer_vector = polymer[port_labels[1]].anchor.pos - polymer[port_labels[0]].anchor.pos
+                norm_vector = polymer_vector / np.linalg.norm(polymer_vector)
+
+                new_port = mb.Port(anchor=polymer[port_labels[0]].anchor,
+                                   orientation=norm_vector,
+                                   separation=0.07)
+
+                polymer[port_labels[0]].update_orientation(orientation=norm_vector)
+
             mb.force_overlap(tail,
                              tail[f"CH2_{i+1}"]["up"],
                              polymer[port_labels[0]])
