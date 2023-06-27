@@ -124,9 +124,11 @@ class DualMonolayer(mb.Compound):
         The separation between the two surfaces.
     shift: bool, optional, default=True
         Shift the top surface to align with the bottom surface
+    surface_idx: list, optional, default=None
+        Indices of all the particle that is part of the surface.
     """
 
-    def __init__(self, top, bottom, separation=0.8, shift=True):
+    def __init__(self, top, bottom, separation=0.8, shift=True, surface_idx=None):
         super(DualMonolayer, self).__init__()
         top.spin(np.pi, around=[0, 1, 0])
 
@@ -135,17 +137,34 @@ class DualMonolayer(mb.Compound):
         z_val = bot_box.lengths[2]
         top.translate([0, 0, z_val + separation])
 
+        if surface_idx:
+            if isinstance(surface_idx, dict):
+                assert surface_idx.get("top") and surface_idx.get("bottom")
+            elif isinstance(surface_idx, (list, tuple)):
+                indices = surface_idx
+                surface_idx = {"top": indices, "bottom": indices}
+            else:
+                raise ValueError()
+
         # Calculated top surface coords
         xs, ys, zs = list(), list(), list()
-        for pos in top["tiled_surface"].xyz:
-            xs.append(pos[0]), ys.append(pos[1]), zs.append(pos[2])
+        if surface_idx["top"]:
+            for idx in surface_idx["top"]:
+                xs.append(top[idx].pos[0]), ys.append(top[idx].pos[1]), zs.append(top[idx].pos[2])
+        else:
+            for pos in top["tiled_surface"].xyz:
+                xs.append(pos[0]), ys.append(pos[1]), zs.append(pos[2])
         xs.sort(), ys.sort(), zs.sort()
         top_coords = ((xs[0], xs[-1]), (ys[0], ys[-1]), (zs[0], zs[-1]))
 
         # Calculate bottom surface coords
         xs, ys, zs = list(), list(), list()
-        for pos in bottom["tiled_surface"].xyz:
-            xs.append(pos[0]), ys.append(pos[1]), zs.append(pos[2])
+        if surface_idx.get("bottom"):
+            for idx in surface_idx["bottom"]:
+                xs.append(top[idx].pos[0]), ys.append(top[idx].pos[1]), zs.append(top[idx].pos[2])
+        else:
+            for pos in bottom["tiled_surface"].xyz:
+                xs.append(pos[0]), ys.append(pos[1]), zs.append(pos[2])
         xs.sort(), ys.sort(), zs.sort()
         bot_coords = ((xs[0], xs[-1]), (ys[0], ys[-1]), (zs[0], zs[-1]))
 
