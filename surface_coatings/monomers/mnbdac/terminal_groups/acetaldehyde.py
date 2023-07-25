@@ -1,14 +1,19 @@
-import mbuild as mb 
+"""Acetaldehyde terminal group class."""
+import mbuild as mb
+
 
 class Acetaldehyde(mb.Compound):
+    """Acetaldehyde terminal group class."""
+
     def __init__(self):
         super().__init__()
-        mb.load("acetaldehyde.mol2",
-                 compound=self,
-                 backend="gmso",
-                 relative_to_module=self.__module__,
-                 infer_hierarchy=False)
+        mb.load(
+            "acetaldehyde.mol2",
+            compound=self,
+            backend="gmso",
+            relative_to_module=self.__module__,
+            infer_hierarchy=False,
+        )
 
         self.remove(self[4])
         self.labels["terminal"] = self["Compound[0]"].labels.pop("port[1]")
-        

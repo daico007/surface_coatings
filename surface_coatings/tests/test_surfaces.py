@@ -1,5 +1,10 @@
 import mbuild as mb
-from surface_coatings.surfaces import SiliconInterface, SilicaInterfaceCarve, SilicaInterface
+
+from surface_coatings.surfaces import (
+    SilicaInterface,
+    SilicaInterfaceCarve,
+    SiliconInterface,
+)
 
 
 class TestSystem(object):

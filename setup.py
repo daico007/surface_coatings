@@ -1,12 +1,14 @@
 from setuptools import setup
-setup(name="surface_coatings",
-      version="0.1.0",
-      descriptions="Generic method to build coated surfaces",
-      author="Co D. Quach",
-      author_email="daico007@gmail.com",
-      license="MIT",
-      packages=["surface_coatings"],
-      zip_safe=False,
+
+setup(
+    name="surface_coatings",
+    version="0.1.0",
+    descriptions="Generic method to build coated surfaces",
+    author="Co D. Quach",
+    author_email="daico007@gmail.com",
+    license="MIT",
+    packages=["surface_coatings"],
+    zip_safe=False,
     # Temporarily turn off entry point setup
     #   entry_points={
     #         "mbuild.plugins": [
@@ -16,4 +18,4 @@ setup(name="surface_coatings",
     #             "SolvatedDualMonolayer = surface_coatings.solvated_monolayer:SolvatedDualMonolayer",
     #         ]
     #     }
-    )
+)

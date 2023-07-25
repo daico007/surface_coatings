@@ -2,9 +2,8 @@
 from copy import deepcopy
 from warnings import warn
 
-import numpy as np
-
 import mbuild as mb
+import numpy as np
 from mbuild.lib.atoms import H
 
 
@@ -33,11 +32,25 @@ class Monolayer(mb.Compound):
         Random seed used for any subprocess.
     """
 
-    def __init__(self, surface, pattern, chains, n_chains, fractions=None, backfill=H(), tile_x=1, tile_y=1, rotate_chains=True, seed=12345, **kwargs):
+    def __init__(
+        self,
+        surface,
+        pattern,
+        chains,
+        n_chains,
+        fractions=None,
+        backfill=H(),
+        tile_x=1,
+        tile_y=1,
+        rotate_chains=True,
+        seed=12345,
+        **kwargs,
+    ):
         super(Monolayer, self).__init__()
 
         tiled_compound = mb.lib.recipes.TiledCompound(
-            surface, n_tiles=(tile_x, tile_y, 1))
+            surface, n_tiles=(tile_x, tile_y, 1)
+        )
         self.add(tiled_compound, label="tiled_surface")
 
         msg = "pattern must be the type of mb.Pattern"
@@ -49,7 +62,8 @@ class Monolayer(mb.Compound):
             chains = [chains]
         for chain in chains:
             assert isinstance(
-                chain, mb.Compound), "Please provide chains as a list of mbuild.Compound"
+                chain, mb.Compound
+            ), "Please provide chains as a list of mbuild.Compound"
         if not fractions:
             fractions = [1 / len(chains) for _ in range(len(chains))]
         if isinstance(fractions, (float, int)):
@@ -59,10 +73,12 @@ class Monolayer(mb.Compound):
             assert np.sum(fractions) == 1
         else:
             raise TypeError(
-                f"Fractions has been provided as type {type(fractions)}. Please provide a list of floats.")
+                f"Fractions has been provided as type {type(fractions)}. Please provide a list of floats."
+            )
         if len(chains) != len(fractions):
             raise ValueError(
-                "Number of fractions does not match the number of chain types provided.")
+                "Number of fractions does not match the number of chain types provided."
+            )
 
         # Attach final chains, remaining sites get a backfill)
         # Attach chains of each type to binding sites based on
@@ -73,27 +89,39 @@ class Monolayer(mb.Compound):
                 subpattern = deepcopy(pattern)
                 n_points = int(round(fraction * n_chains))
                 warn("\n Adding {} of chain {}".format(n_points, chain))
-                pick = np.random.choice(subpattern.points.shape[0], n_points,
-                                        replace=False)
+                pick = np.random.choice(
+                    subpattern.points.shape[0], n_points, replace=False
+                )
                 points = subpattern.points[pick]
                 subpattern.points = points
 
                 # Remove now-occupied points from overall pattern
-                pattern.points = np.array([point for point in pattern.points.tolist()
-                                           if point not in subpattern.points.tolist()])
+                pattern.points = np.array(
+                    [
+                        point
+                        for point in pattern.points.tolist()
+                        if point not in subpattern.points.tolist()
+                    ]
+                )
 
                 # Attach chains to the surface
                 attached_chains, _ = subpattern.apply_to_compound(
-                    guest=chain, host=self['tiled_surface'], backfill=None, **kwargs)
+                    guest=chain,
+                    host=self["tiled_surface"],
+                    backfill=None,
+                    **kwargs,
+                )
                 self.add(attached_chains)
 
         else:
             warn("\n No fractions provided. Assuming a single chain type.")
 
-        attached_chains, backfills = pattern.apply_to_compound(guest=chains[-1],
-                                                               host=self["tiled_surface"],
-                                                               backfill=backfill,
-                                                               **kwargs)
+        attached_chains, backfills = pattern.apply_to_compound(
+            guest=chains[-1],
+            host=self["tiled_surface"],
+            backfill=backfill,
+            **kwargs,
+        )
         self.add(attached_chains)
         self.add(backfills)
 
@@ -103,9 +131,11 @@ class Monolayer(mb.Compound):
                 rotation = np.random.random() * np.pi * 2.0
                 chain.spin(rotation, [0, 0, 1], anchor=chain[0])
 
-        system_box_lengths = [self["tiled_surface"].get_boundingbox().lengths[0],
-                              self["tiled_surface"].get_boundingbox().lengths[1],
-                              self.get_boundingbox().lengths[2]]
+        system_box_lengths = [
+            self["tiled_surface"].get_boundingbox().lengths[0],
+            self["tiled_surface"].get_boundingbox().lengths[1],
+            self.get_boundingbox().lengths[2],
+        ]
 
         self.box = mb.Box(system_box_lengths)
         self.periodicity = surface.periodicity
@@ -128,7 +158,9 @@ class DualMonolayer(mb.Compound):
         Indices of all the particle that is part of the surface.
     """
 
-    def __init__(self, top, bottom, separation=0.8, shift=True, surface_idx=None):
+    def __init__(
+        self, top, bottom, separation=0.8, shift=True, surface_idx=None
+    ):
         super(DualMonolayer, self).__init__()
         top.spin(np.pi, around=[0, 1, 0])
 
@@ -150,7 +182,9 @@ class DualMonolayer(mb.Compound):
         xs, ys, zs = list(), list(), list()
         if surface_idx["top"]:
             for idx in surface_idx["top"]:
-                xs.append(top[idx].pos[0]), ys.append(top[idx].pos[1]), zs.append(top[idx].pos[2])
+                xs.append(top[idx].pos[0]), ys.append(
+                    top[idx].pos[1]
+                ), zs.append(top[idx].pos[2])
         else:
             for pos in top["tiled_surface"].xyz:
                 xs.append(pos[0]), ys.append(pos[1]), zs.append(pos[2])
@@ -161,7 +195,9 @@ class DualMonolayer(mb.Compound):
         xs, ys, zs = list(), list(), list()
         if surface_idx.get("bottom"):
             for idx in surface_idx["bottom"]:
-                xs.append(top[idx].pos[0]), ys.append(top[idx].pos[1]), zs.append(top[idx].pos[2])
+                xs.append(top[idx].pos[0]), ys.append(
+                    top[idx].pos[1]
+                ), zs.append(top[idx].pos[2])
         else:
             for pos in bottom["tiled_surface"].xyz:
                 xs.append(pos[0]), ys.append(pos[1]), zs.append(pos[2])
@@ -169,9 +205,13 @@ class DualMonolayer(mb.Compound):
         bot_coords = ((xs[0], xs[-1]), (ys[0], ys[-1]), (zs[0], zs[-1]))
 
         if shift:
-            top.translate([bot_coords[0][0]-top_coords[0][0],
-                          bot_coords[1][0]-top_coords[1][0],
-                          0])
+            top.translate(
+                [
+                    bot_coords[0][0] - top_coords[0][0],
+                    bot_coords[1][0] - top_coords[1][0],
+                    0,
+                ]
+            )
 
         if (top.name and bottom.name) and (top.name != bottom.name):
             self.add(top, label=top.name)
@@ -180,8 +220,10 @@ class DualMonolayer(mb.Compound):
             self.add(top, label="top_monolayer")
             self.add(bottom, label="bottom_monolayer")
 
-        system_box_lengths = [max(top_box.lengths[0], bot_box.lengths[0]),
-                              max(top_box.lengths[1], bot_box.lengths[1]),
-                              self.get_boundingbox().lengths[2]]
+        system_box_lengths = [
+            max(top_box.lengths[0], bot_box.lengths[0]),
+            max(top_box.lengths[1], bot_box.lengths[1]),
+            self.get_boundingbox().lengths[2],
+        ]
         self.box = mb.Box(system_box_lengths)
         self.periodicity = bottom.periodicity

@@ -1,19 +1,23 @@
+"""Cresol side chain class."""
 import mbuild as mb
 
 
 class Cresol(mb.Compound):
+    """Cresol side chain class."""
+
     def __init__(self):
         super().__init__()
-        mb.load("cresol.mol2",
-                compound=self,
-                backend="gmso",
-                relative_to_module=self.__module__,
-                infer_hierarchy=False)
+        mb.load(
+            "cresol.mol2",
+            compound=self,
+            backend="gmso",
+            relative_to_module=self.__module__,
+            infer_hierarchy=False,
+        )
 
         to_remove = [self[8], self[15]]
         for part in to_remove:
             self.remove(part)
 
-        self.labels["side"] = self["Compound[0]"].labels.pop('port[3]')
-        self.labels["terminal"] = self["Compound[0]"].labels.pop('port[1]')
-
+        self.labels["side"] = self["Compound[0]"].labels.pop("port[3]")
+        self.labels["terminal"] = self["Compound[0]"].labels.pop("port[1]")
