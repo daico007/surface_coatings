@@ -1,7 +1,7 @@
 """Routine to create alkylsilane chain."""
 import mbuild as mb
-from mbuild.lib.recipes import Alkane
 from mbuild.lib.moieties import Silane
+from mbuild.lib.recipes import Alkane
 
 from surface_coatings.molecules.one_port import OnePort
 
@@ -22,18 +22,22 @@ class Alkylsilane(mb.Compound):
        repository is `methyl`, but more can be easily added by providing
        appropriate supplement structure files.
     """
+
     def __init__(self, chain_length=17, terminal_group="methyl"):
         super(Alkylsilane, self).__init__()
 
         tgroup = OnePort(terminal_group)
 
         alkane = Alkane(chain_length, cap_front=False, cap_end=False)
-        self.add(alkane, 'alkane')
-        self.add(tgroup, 'terminal_group')
-        mb.force_overlap(self['alkane'], self['alkane']['up'],
-                         self['terminal_group']['down'])
+        self.add(alkane, "alkane")
+        self.add(tgroup, "terminal_group")
+        mb.force_overlap(
+            self["alkane"], self["alkane"]["up"], self["terminal_group"]["down"]
+        )
         silane = Silane()
-        self.add(silane, 'silane')
-        mb.force_overlap(self['silane'], self['silane']['up'], self['alkane']['down'])
+        self.add(silane, "silane")
+        mb.force_overlap(
+            self["silane"], self["silane"]["up"], self["alkane"]["down"]
+        )
 
-        self.add(silane['down'], 'down', containment=False)
+        self.add(silane["down"], "down", containment=False)

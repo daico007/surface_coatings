@@ -1,7 +1,11 @@
-import mbuild as mb 
+"""NBDAC monomer class."""
+import mbuild as mb
+
 
 # Backbone monomer
 class mNBDAC(mb.Compound):
+    """NBDAC monomer class."""
+
     def __init__(self):
         super().__init__()
         self.add(mb.load("C=CC1C(C(=O)Cl)C(C(=O)Cl)C(C=C)C1", smiles=True))
@@ -15,12 +19,11 @@ class mNBDAC(mb.Compound):
             self.remove(c)
         for h in h_to_remove:
             self.remove(h)
-        
+
         self.labels["up"] = self["Compound[0]"].labels.pop("port[1]")
         self.labels["down"] = self["Compound[0]"].labels.pop("port[7]")
-        
-         
+
         for cl in cl_to_remove:
             self.remove(cl)
-        self.labels['side0'] = self["Compound[0]"].labels.pop("port[13]")
-        self.labels['side1'] = self["Compound[0]"].labels.pop("port[15]")
+        self.labels["side0"] = self["Compound[0]"].labels.pop("port[13]")
+        self.labels["side1"] = self["Compound[0]"].labels.pop("port[15]")
