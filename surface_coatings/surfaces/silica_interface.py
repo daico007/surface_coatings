@@ -9,7 +9,8 @@ class SilicaInterface(mb.Compound):
     Parameters
     ----------
     dimensions : tuple of len 2, optional, default=(5.388800 * 1.2, 4.589110 * 1.25)
-        Define the x and y dimension of the silica interface
+        Define the x and y dimension of the silica interface.
+        Currently not used, pending https://github.com/mosdef-hub/mbuild/pull/1124.
     tile_x : int, optional, default=1
         Option to expand in x dimension by tile_x
     tile_y : int, optional, default=1
@@ -20,7 +21,8 @@ class SilicaInterface(mb.Compound):
         self, dimensions=(5.388800 * 1.2, 4.589110 * 1.25), tile_x=1, tile_y=1
     ):
         super(SilicaInterface, self).__init__()
-        silica_crystal = Betacristobalite(dimensions)
+        # silica_crystal = Betacristobalite(dimensions)
+        silica_crystal = Betacristobalite()
         tiled_compound = mb.lib.recipes.TiledCompound(
             mb.clone(silica_crystal), n_tiles=(tile_x, tile_y, 1)
         )
