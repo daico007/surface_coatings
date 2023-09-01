@@ -177,10 +177,12 @@ class DualMonolayer(mb.Compound):
                 surface_idx = {"top": indices, "bottom": indices}
             else:
                 raise ValueError()
+        else:
+            surface_idx = dict()
 
         # Calculated top surface coords
         xs, ys, zs = list(), list(), list()
-        if surface_idx["top"]:
+        if surface_idx.get("top"):
             for idx in surface_idx["top"]:
                 xs.append(top[idx].pos[0]), ys.append(
                     top[idx].pos[1]

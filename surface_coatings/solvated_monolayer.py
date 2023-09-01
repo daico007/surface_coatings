@@ -4,6 +4,7 @@ from os import system
 import mbuild as mb
 import numpy as np
 from mbuild.lib.moieties import H2O
+from mbuild.packing import solvate
 
 
 class SolvatedMonolayer(mb.Compound):
@@ -47,6 +48,7 @@ class SolvatedMonolayer(mb.Compound):
             (zs[0], zs[-1]),
         )
 
+        # Change this to solvating the whole system using the solvate method.
         solvent_box = [
             surface_box_lengths[0],
             surface_box_lengths[1],
