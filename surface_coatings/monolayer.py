@@ -1,6 +1,7 @@
 """Routines to create (dual) monolayer systems."""
 from copy import deepcopy
 from warnings import warn
+from surface_coatings.utils.utils import boundary_positions
 
 import mbuild as mb
 import numpy as np
@@ -166,8 +167,10 @@ class DualMonolayer(mb.Compound):
 
         bot_box = bottom.get_boundingbox()
         top_box = top.get_boundingbox()
-        z_val = bot_box.lengths[2]
-        top.translate([0, 0, z_val + separation])
+        top_min, top_max = boundary_positions(top)
+        bot_min, bot_max = boundary_positions(bottom)
+
+        top.translate([0, 0, bot_max[2] - top_min[2] + separation])
 
         if surface_idx:
             if isinstance(surface_idx, dict):
