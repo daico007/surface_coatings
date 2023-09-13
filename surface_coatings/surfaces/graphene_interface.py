@@ -24,13 +24,13 @@ class GrapheneInterface(mb.Compound):
     see mbuild.Compound
 
     """
-    def __init__(self, pore_length=4, pore_depth=3, vacuum=10.0, box = "lattice"):
+    def __init__(self, x_length=4, y_length=3, n_sheets=3, vacuumn=10.0):
         super(GrapheneInterface, self).__init__()
 
         factor = np.cos(np.pi/6)
         # Estimate the number of lattice repeat units
-        replicate = [int(pore_length/0.2456), (pore_depth/0.2456)*(1/factor)]
-        if all(x <= 0 for x in [pore_length, pore_depth]):
+        replicate = [int(x_length/0.2456), (y_length/0.2456)*(1/factor)]
+        if all(x <= 0 for x in [x_length, y_length]):
             msg = 'Dimension of graphene sheet must be greater than zero'
             raise ValueError(msg)
         carbon = mb.Compound()
@@ -55,11 +55,3 @@ class GrapheneInterface(mb.Compound):
         self.xyz -= np.min(self.xyz, axis=0)
 
         self.xyz -= np.min(self.xyz, axis=0)
-        if box == "tight":
-            self.box = self.get_boundingbox(pad_box = 0.08)
-            empty_box = mb.Box(lengths=[self.box.Lx, self.box.Ly, self.box.Lz+ vacuum], angles=[90, 90, 90])
-            self.box = empty_box
-        elif box == "lattice":
-            self.box = self.get_boundingbox(pad_box = lattice_spacing[2])
-            empty_box = mb.Box(lengths=[self.box.Lx, self.box.Ly, self.box.Lz+ vacuum], angles=[90, 90, 90])
-            self.box = empty_box
