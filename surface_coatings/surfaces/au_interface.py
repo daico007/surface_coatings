@@ -9,11 +9,11 @@ class AuLattice(mb.Compound):
 
     Parameters
     ----------
-    x_length : int, default=4
+    x : int, default=4
         dimensions of gold sheet length in nm
-    y_length : int, default=4
+    y : int, default=4
         dimensions of gold sheet depth in nm
-    n_sheets : int, default=3
+    n_layers : int, default=3
         number of layers of gold cells
 
     Attributes
@@ -30,7 +30,7 @@ class AuLattice(mb.Compound):
             msg = 'Dimension of graphene sheet must be greater than zero'
             raise ValueError(msg)
         au = mb.Compound(name='Au', element='Au')
-        # full Au cell position
+        # full Au cell position (face center)
         # au_locations = [
         #     [0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0.5, 0.5, 0],
         #     [0, 0.5, 0.5], [1, 0.5, 0.5], [0.5, 0, 0.5], [0.5, 1, 0.5],
