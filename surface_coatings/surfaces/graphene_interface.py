@@ -3,34 +3,32 @@ import mbuild as mb
 import numpy as np
 
 
-class GrapheneInterface(mb.Compound):
+class GrapheneSheet(mb.Compound):
     """A general graphene surface recipe exposed to vacuum.
 
     This class is adapted from
     https://github.com/PTC-CMC/Pore-Builder/blob/master/porebuilder/porebuilder.py
     Parameters
     ----------
-    x_length : int, default=4
+    x : int, default=4
         dimensions of graphene sheet length in nm
-    y_length : int, default=4
+    y : int, default=4
         dimensions of graphene sheet depth in nm
-    n_sheets : int, default=3
+    n_layers : int, default=3
         number of parallel graphene sheets
-    vacuum : float, default=10.0
-        Dimension of vacuum space in z-direction in nm
 
     Attributes
     ----------
     see mbuild.Compound
 
     """
-    def __init__(self, x_length=4, y_length=3, n_sheets=3, vacuumn=10.0):
-        super(GrapheneInterface, self).__init__()
+    def __init__(self, x=5, y=5, n_layers=3):
+        super(GrapheneSheet, self).__init__()
 
         factor = np.cos(np.pi/6)
         # Estimate the number of lattice repeat units
-        replicate = [int(x_length/0.2456), (y_length/0.2456)*(1/factor)]
-        if all(x <= 0 for x in [x_length, y_length]):
+        replicate = [int(x/0.2456), (y/0.2456)*(1/factor)]
+        if all(x <= 0 for x in [x, y]):
             msg = 'Dimension of graphene sheet must be greater than zero'
             raise ValueError(msg)
         carbon = mb.Compound()
@@ -45,7 +43,7 @@ class GrapheneInterface(mb.Compound):
 
         graphene = graphene_lattice.populate(compound_dict={carbon.name: carbon},
                                              x=replicate[0], y=replicate[1],
-                                             z=1)
+                                             z=n_layers)
 
         for particle in graphene.particles():
             if particle.xyz[0][0] < 0:
