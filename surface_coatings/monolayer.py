@@ -15,6 +15,8 @@ class Monolayer(mb.Compound):
     ----------
     surface: mb.Compound
         The surface with ports at its surface.
+    pattern : mb.Pattern
+        Pattern of chains to be attached to the surface.
     chains: list of mb.Compound
         The chains that are to be attached to the surface.
     n_chains: int
@@ -25,7 +27,7 @@ class Monolayer(mb.Compound):
         the surface.
     backfill: mb.Compound, optional, default=H()
         Compound used to backfill leftover ports (after all chains have been attached.
-    tile_x, tile_y: int, optional, default= 1, 1
+    tile_x, tile_y: int, optional, default=(1, 1)
         The number of surface tiles.
     rotate_chains: bool, optional, default=True
         Options to rotate the chain randomly.
