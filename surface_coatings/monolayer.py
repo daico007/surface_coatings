@@ -15,6 +15,8 @@ class Monolayer(mb.Compound):
     ----------
     surface: mb.Compound
         The surface with ports at its surface.
+    pattern : mb.Pattern
+        Pattern of chains to be attached to the surface.
     chains: list of mb.Compound
         The chains that are to be attached to the surface.
     n_chains: int
@@ -25,7 +27,7 @@ class Monolayer(mb.Compound):
         the surface.
     backfill: mb.Compound, optional, default=H()
         Compound used to backfill leftover ports (after all chains have been attached.
-    tile_x, tile_y: int, optional, default= 1, 1
+    tile_x, tile_y: int, optional, default=(1, 1)
         The number of surface tiles.
     rotate_chains: bool, optional, default=True
         Options to rotate the chain randomly.
@@ -106,25 +108,26 @@ class Monolayer(mb.Compound):
                 )
 
                 # Attach chains to the surface
-                attached_chains, _ = subpattern.apply_to_compound(
+                attached_chains, backfills = subpattern.apply_to_compound(
                     guest=chain,
                     host=self["tiled_surface"],
-                    backfill=None,
+                    backfill=backfill,
                     **kwargs,
                 )
                 self.add(attached_chains)
+                self.add(backfills)
 
         else:
             warn("\n No fractions provided. Assuming a single chain type.")
 
-        attached_chains, backfills = pattern.apply_to_compound(
-            guest=chains[-1],
-            host=self["tiled_surface"],
-            backfill=backfill,
-            **kwargs,
-        )
-        self.add(attached_chains)
-        self.add(backfills)
+            attached_chains, backfills = pattern.apply_to_compound(
+                guest=chains[-1],
+                host=self["tiled_surface"],
+                backfill=backfill,
+                **kwargs,
+            )
+            self.add(attached_chains)
+            self.add(backfills)
 
         if rotate_chains:
             np.random.seed(seed)
