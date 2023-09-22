@@ -106,25 +106,26 @@ class Monolayer(mb.Compound):
                 )
 
                 # Attach chains to the surface
-                attached_chains, _ = subpattern.apply_to_compound(
+                attached_chains, backfills = subpattern.apply_to_compound(
                     guest=chain,
                     host=self["tiled_surface"],
-                    backfill=None,
+                    backfill=backfill,
                     **kwargs,
                 )
                 self.add(attached_chains)
+                self.add(backfills)
 
         else:
             warn("\n No fractions provided. Assuming a single chain type.")
 
-        attached_chains, backfills = pattern.apply_to_compound(
-            guest=chains[-1],
-            host=self["tiled_surface"],
-            backfill=backfill,
-            **kwargs,
-        )
-        self.add(attached_chains)
-        self.add(backfills)
+            attached_chains, backfills = pattern.apply_to_compound(
+                guest=chains[-1],
+                host=self["tiled_surface"],
+                backfill=backfill,
+                **kwargs,
+            )
+            self.add(attached_chains)
+            self.add(backfills)
 
         if rotate_chains:
             np.random.seed(seed)
