@@ -1,13 +1,17 @@
-name: Python Package using Conda
+name: CI
 
 on:
+  push:
+    branches:
+      - "main"
   pull_request:
     branches:
-    - master
+    - main
   workflow_dispatch:
 
 jobs:
   test:
+    if: github.event.pull_request.draft == false
     name: Unit Test on ${{ matrix.os  }}, Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
