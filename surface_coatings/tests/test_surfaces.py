@@ -29,4 +29,4 @@ class TestSystem(object):
 
     def test_au_interface(self):
         au_interface = AuLattice()
-        assert au_interface.periodicity == (True, True, False)
+        assert au_interface.periodicity == (True, True, True)
