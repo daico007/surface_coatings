@@ -53,3 +53,5 @@ class GrapheneSheet(mb.Compound):
         self.xyz -= np.min(self.xyz, axis=0)
 
         self.xyz -= np.min(self.xyz, axis=0)
+
+        self.periodicity = (True, True, False)

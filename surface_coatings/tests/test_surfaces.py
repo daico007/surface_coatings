@@ -4,6 +4,9 @@ from surface_coatings.surfaces import (
     SilicaInterface,
     SilicaInterfaceCarve,
     SiliconInterface,
+    GrapheneSheet,
+    AuLattice,
+
 )
 
 
@@ -19,3 +22,11 @@ class TestSystem(object):
     def test_silica_interface(self):
         silica_surface = SilicaInterface()
         assert silica_surface.periodicity == (True, True, False)
+
+    def test_graphene_interface(self):
+        graphene_sheet = GrapheneSheet()
+        assert graphene_sheet.periodicity == (True, True, False)
+
+    def test_au_interface(self):
+        au_interface = AuLattice()
+        assert au_interface.periodicity == (True, True, False)
