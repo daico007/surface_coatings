@@ -146,14 +146,16 @@ class pNBDAC(mb.Compound):
             tail.add(buffer_options.get(buffer.lower())(), "Buffer")
             tail.add(CH2(), "CH2_0")
 
-            i = 0
-            for i in range(buffer_length):
-                tail.add(CH2(), f"CH2_{i+1}")
-                mb.force_overlap(
-                    tail[f"CH2_{i+1}"],
-                    tail[f"CH2_{i+1}"]["down"],
-                    tail[f"CH2_{i}"]["up"],
-                )
+            if buffer_length >= 1:
+                for i in range(buffer_length):
+                    tail.add(CH2(), f"CH2_{i+1}")
+                    mb.force_overlap(
+                        tail[f"CH2_{i+1}"],
+                        tail[f"CH2_{i+1}"]["down"],
+                        tail[f"CH2_{i}"]["up"],
+                    )
+            else:
+                i = -1
 
             mb.force_overlap(
                 tail["Buffer"], tail["Buffer"]["up"], tail[f"CH2_0"]["down"]
