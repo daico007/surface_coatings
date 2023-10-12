@@ -15,5 +15,5 @@ class Aniline(mb.Compound):
             infer_hierarchy=False,
         )
 
-        self.remove(self[12])
+        self.remove(self[11])
         self.labels["terminal"] = self["Compound[0]"].labels.pop("port[1]")
