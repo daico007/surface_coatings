@@ -6,3 +6,4 @@ from .hydroxyl import Hydroxyl
 from .methyl import Methyl
 from .toluene import Toluene
 from .trifluoromethyl import Trifluoromethyl
+from .aniline import Aniline
