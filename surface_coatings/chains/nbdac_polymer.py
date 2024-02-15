@@ -11,6 +11,12 @@ from surface_coatings.monomers import mNBDAC
 from surface_coatings.monomers.mnbdac.side_chains import AminoPropyl
 from surface_coatings.monomers.mnbdac.terminal_groups import Acetaldehyde
 
+# Create custom ch2 cap for the polymer
+# clone this when provided to the polymer
+ch2_cap = CH2()
+ch2_cap.remove(
+    ch2_cap["down"]
+)
 
 class O(mb.Compound):
     """An oxygen with two ports attached."""
@@ -91,7 +97,7 @@ class pNBDAC(mb.Compound):
     terminal_groups: mb.Compound or list of Compounds (len 2)
         Terminal groups which will be matched with side chains
     cap_front : bool, optional, default=True
-        Cap the front of the polymer (NBDAC end)
+        Cap the front of the polymer (NBDAC end) with a CH2
     cap_end : bool, optional, default=False
         Cap the end of the polymer (Silane end)
     buffer : str, optional, default=None
@@ -185,7 +191,7 @@ class pNBDAC(mb.Compound):
             self.labels["down"] = self["Polymer"]["down"]
 
         if cap_front:
-            front_cap = H()
+            front_cap = mb.clone(ch2_cap)
             self.add(front_cap, "front_cap")
             mb.force_overlap(
                 move_this=front_cap,
@@ -193,7 +199,7 @@ class pNBDAC(mb.Compound):
                 to_positions=self["up"],
             )
         if cap_end:
-            end_cap = H()
+            end_cap = mb.clone(ch2_cap)
             self.add(end_cap, "end_cap")
             mb.force_overlap(
                 move_this=end_cap,
